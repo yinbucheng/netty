@@ -129,7 +129,9 @@ public class HashedWheelTimer implements Timer {
      * @param unit           the time unit of the {@code tickDuration}
      * @throws NullPointerException     if {@code unit} is {@code null}
      * @throws IllegalArgumentException if {@code tickDuration} is &lt;= 0
+     * @deprecated use {@link #HashedWheelTimer(long)}
      */
+    @Deprecated
     public HashedWheelTimer(long tickDuration, TimeUnit unit) {
         this(Executors.defaultThreadFactory(), tickDuration, unit);
     }
@@ -143,7 +145,9 @@ public class HashedWheelTimer implements Timer {
      * @param ticksPerWheel  the size of the wheel
      * @throws NullPointerException     if {@code unit} is {@code null}
      * @throws IllegalArgumentException if either of {@code tickDuration} and {@code ticksPerWheel} is &lt;= 0
+     * @deprecated use {@link #HashedWheelTimer(long, int)}
      */
+    @Deprecated
     public HashedWheelTimer(long tickDuration, TimeUnit unit, int ticksPerWheel) {
         this(Executors.defaultThreadFactory(), tickDuration, unit, ticksPerWheel);
     }
@@ -158,7 +162,7 @@ public class HashedWheelTimer implements Timer {
      * @throws NullPointerException if {@code threadFactory} is {@code null}
      */
     public HashedWheelTimer(ThreadFactory threadFactory) {
-        this(threadFactory, 100, TimeUnit.MILLISECONDS);
+        this(threadFactory, 100);
     }
 
     /**
@@ -171,7 +175,9 @@ public class HashedWheelTimer implements Timer {
      * @param unit           the time unit of the {@code tickDuration}
      * @throws NullPointerException     if either of {@code threadFactory} and {@code unit} is {@code null}
      * @throws IllegalArgumentException if {@code tickDuration} is &lt;= 0
+     * @deprecated use {@link #HashedWheelTimer(ThreadFactory, long)}
      */
+    @Deprecated
     public HashedWheelTimer(
             ThreadFactory threadFactory, long tickDuration, TimeUnit unit) {
         this(threadFactory, tickDuration, unit, 512);
@@ -188,7 +194,9 @@ public class HashedWheelTimer implements Timer {
      * @param ticksPerWheel  the size of the wheel
      * @throws NullPointerException     if either of {@code threadFactory} and {@code unit} is {@code null}
      * @throws IllegalArgumentException if either of {@code tickDuration} and {@code ticksPerWheel} is &lt;= 0
+     * @deprecated use {@link #HashedWheelTimer(ThreadFactory, long, int)}
      */
+    @Deprecated
     public HashedWheelTimer(
             ThreadFactory threadFactory,
             long tickDuration, TimeUnit unit, int ticksPerWheel) {
@@ -209,7 +217,9 @@ public class HashedWheelTimer implements Timer {
      *                             a daemon thread.
      * @throws NullPointerException     if either of {@code threadFactory} and {@code unit} is {@code null}
      * @throws IllegalArgumentException if either of {@code tickDuration} and {@code ticksPerWheel} is &lt;= 0
+     * @deprecated use {@link #HashedWheelTimer(ThreadFactory, long, int, boolean)}
      */
+    @Deprecated
     public HashedWheelTimer(
         ThreadFactory threadFactory,
         long tickDuration, TimeUnit unit, int ticksPerWheel, boolean leakDetection) {
@@ -230,17 +240,18 @@ public class HashedWheelTimer implements Timer {
      *                             a daemon thread.
      * @param  maxPendingTimeouts  The maximum number of pending timeouts after which call to
      *                             {@code newTimeout} will result in
-     *                             {@link java.util.concurrent.RejectedExecutionException}
+     *                             {@link RejectedExecutionException}
      *                             being thrown. No maximum pending timeouts limit is assumed if
      *                             this value is 0 or negative.
      * @throws NullPointerException     if either of {@code threadFactory} and {@code unit} is {@code null}
      * @throws IllegalArgumentException if either of {@code tickDuration} and {@code ticksPerWheel} is &lt;= 0
+     * @deprecated use {@link #HashedWheelTimer(ThreadFactory, long, int, boolean, long)}
      */
+    @Deprecated
     public HashedWheelTimer(
             ThreadFactory threadFactory,
             long tickDuration, TimeUnit unit, int ticksPerWheel, boolean leakDetection,
             long maxPendingTimeouts) {
-
         if (threadFactory == null) {
             throw new NullPointerException("threadFactory");
         }
@@ -277,6 +288,112 @@ public class HashedWheelTimer implements Timer {
             WARNED_TOO_MANY_INSTANCES.compareAndSet(false, true)) {
             reportTooManyInstances();
         }
+    }
+
+    /**
+     * Creates a new timer with the default thread factory
+     * ({@link Executors#defaultThreadFactory()}) and default number of ticks
+     * per wheel.
+     *
+     * @param tickDurationMillis the duration between tick
+     * @throws NullPointerException     if {@code unit} is {@code null}
+     * @throws IllegalArgumentException if {@code tickDuration} is &lt;= 0
+     */
+    public HashedWheelTimer(long tickDurationMillis) {
+        this(Executors.defaultThreadFactory(), tickDurationMillis);
+    }
+
+    /**
+     * Creates a new timer with the default thread factory
+     * ({@link Executors#defaultThreadFactory()}).
+     *
+     * @param tickDurationMillis the duration between tick
+     * @param ticksPerWheel      the size of the wheel
+     * @throws NullPointerException     if {@code unit} is {@code null}
+     * @throws IllegalArgumentException if either of {@code tickDuration} and {@code ticksPerWheel} is &lt;= 0
+     */
+    public HashedWheelTimer(long tickDurationMillis, int ticksPerWheel) {
+        this(Executors.defaultThreadFactory(), tickDurationMillis, ticksPerWheel);
+    }
+
+    /**
+     * Creates a new timer with the default number of ticks per wheel.
+     *
+     * @param threadFactory      a {@link ThreadFactory} that creates a
+     *                           background {@link Thread} which is dedicated to
+     *                           {@link TimerTask} execution.
+     * @param tickDurationMillis the duration between tick
+     * @throws NullPointerException     if either of {@code threadFactory} and {@code unit} is {@code null}
+     * @throws IllegalArgumentException if {@code tickDuration} is &lt;= 0
+     */
+    public HashedWheelTimer(
+            ThreadFactory threadFactory, long tickDurationMillis) {
+        this(threadFactory, tickDurationMillis, 512);
+    }
+
+    /**
+     * Creates a new timer.
+     *
+     * @param threadFactory      a {@link ThreadFactory} that creates a
+     *                           background {@link Thread} which is dedicated to
+     *                           {@link TimerTask} execution.
+     * @param tickDurationMillis the duration between tick
+     * @param ticksPerWheel  the size of the wheel
+     * @throws NullPointerException     if either of {@code threadFactory} and {@code unit} is {@code null}
+     * @throws IllegalArgumentException if either of {@code tickDuration} and {@code ticksPerWheel} is &lt;= 0
+     */
+    public HashedWheelTimer(
+            ThreadFactory threadFactory,
+            long tickDurationMillis, int ticksPerWheel) {
+        this(threadFactory, tickDurationMillis, ticksPerWheel, true);
+    }
+
+    /**
+     * Creates a new timer.
+     *
+     * @param threadFactory        a {@link ThreadFactory} that creates a
+     *                             background {@link Thread} which is dedicated to
+     *                             {@link TimerTask} execution.
+     * @param tickDurationMillis   the duration between tick
+     * @param ticksPerWheel        the size of the wheel
+     * @param leakDetection        {@code true} if leak detection should be enabled always,
+     *                             if false it will only be enabled if the worker thread is not
+     *                             a daemon thread.
+     * @throws NullPointerException     if either of {@code threadFactory} and {@code unit} is {@code null}
+     * @throws IllegalArgumentException if either of {@code tickDuration} and {@code ticksPerWheel} is &lt;= 0
+     */
+    public HashedWheelTimer(
+            ThreadFactory threadFactory,
+            long tickDurationMillis, int ticksPerWheel, boolean leakDetection) {
+        this(threadFactory, tickDurationMillis, ticksPerWheel, leakDetection, -1);
+    }
+
+    /**
+     * Creates a new timer.
+     *
+     * @param threadFactory        a {@link ThreadFactory} that creates a
+     *                             background {@link Thread} which is dedicated to
+     *                             {@link TimerTask} execution.
+     * @param tickDurationMillis   the duration between tick
+     * @param ticksPerWheel        the size of the wheel
+     * @param leakDetection        {@code true} if leak detection should be enabled always,
+     *                             if false it will only be enabled if the worker thread is not
+     *                             a daemon thread.
+     * @param  maxPendingTimeouts  The maximum number of pending timeouts after which call to
+     *                             {@code newTimeout} will result in
+     *                             {@link RejectedExecutionException}
+     *                             being thrown. No maximum pending timeouts limit is assumed if
+     *                             this value is 0 or negative.
+     * @throws NullPointerException     if either of {@code threadFactory} and {@code unit} is {@code null}
+     * @throws IllegalArgumentException if either of {@code tickDuration} and {@code ticksPerWheel} is &lt;= 0
+     */
+    @SuppressWarnings("deprecation")
+    public HashedWheelTimer(
+            ThreadFactory threadFactory,
+            long tickDurationMillis, int ticksPerWheel, boolean leakDetection,
+            long maxPendingTimeouts) {
+        this(threadFactory, tickDurationMillis, TimeUnit.MILLISECONDS,
+             ticksPerWheel, leakDetection, maxPendingTimeouts);
     }
 
     @Override
