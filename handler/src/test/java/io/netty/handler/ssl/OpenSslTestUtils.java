@@ -31,10 +31,6 @@ final class OpenSslTestUtils {
         assumeTrue(OpenSsl.supportsKeyManagerFactory() && OpenSsl.useKeyManagerFactory());
     }
 
-    static boolean isBoringSSL() {
-        return "BoringSSL".equals(OpenSsl.versionString());
-    }
-
     static SslContextBuilder configureProtocolForMutualAuth(
             SslContextBuilder ctx, SslProvider sslClientProvider, SslProvider sslServerProvider) {
         if (PlatformDependent.javaVersion() >= 11
