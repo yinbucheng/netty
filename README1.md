@@ -15,3 +15,9 @@
 ```
 
 ```
+
+### 打包流程
+```
+1.先将 netty-dev-tools执行mvn install
+2.再将 netty-common 执行mvn install
+```
