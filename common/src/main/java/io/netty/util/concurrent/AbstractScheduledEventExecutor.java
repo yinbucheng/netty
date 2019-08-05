@@ -100,7 +100,7 @@ public abstract class AbstractScheduledEventExecutor extends AbstractEventExecut
      */
     protected final Runnable pollScheduledTask(long nanoTime) {
         assert inEventLoop();
-
+         //获取任务判断当前任务是否达到满足的时间
         Queue<ScheduledFutureTask<?>> scheduledTaskQueue = this.scheduledTaskQueue;
         ScheduledFutureTask<?> scheduledTask = scheduledTaskQueue == null ? null : scheduledTaskQueue.peek();
         if (scheduledTask == null) {

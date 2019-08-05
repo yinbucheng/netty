@@ -272,8 +272,10 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
 
     private boolean fetchFromScheduledTaskQueue() {
         long nanoTime = AbstractScheduledEventExecutor.nanoTime();
+        //获取满足的任务
         Runnable scheduledTask  = pollScheduledTask(nanoTime);
         while (scheduledTask != null) {
+            //将任务添加到taskQueue队列中
             if (!taskQueue.offer(scheduledTask)) {
                 // No space left in the task queue add it back to the scheduledTaskQueue so we pick it up again.
                 scheduledTaskQueue().add((ScheduledFutureTask<?>) scheduledTask);
@@ -351,6 +353,7 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
         boolean ranAtLeastOne = false;
 
         do {
+            //获取满足的任务并进行运行
             fetchedAll = fetchFromScheduledTaskQueue();
             if (runAllTasksFrom(taskQueue)) {
                 ranAtLeastOne = true;
