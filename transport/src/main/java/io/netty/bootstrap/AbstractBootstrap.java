@@ -317,6 +317,9 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
     final ChannelFuture initAndRegister() {
         Channel channel = null;
         try {
+            //创建一个Channel，这里主要通过方式创建对象
+            //对象来源 bootstrap.channel(NioSocketChannel.class);
+            //或者服务端bootstrap.channel(NioServerSocketChannel.class);
             channel = channelFactory.newChannel();
             init(channel);
         } catch (Throwable t) {
@@ -329,7 +332,8 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
             // as the Channel is not registered yet we need to force the usage of the GlobalEventExecutor
             return new DefaultChannelPromise(new FailedChannel(), GlobalEventExecutor.INSTANCE).setFailure(t);
         }
-
+        //这里的config，实现类为Bootstrap 或者ServerBootstrap
+        //调用group其实就是想通过NioEventLoop来进行处理
         ChannelFuture regFuture = config().group().register(channel);
         if (regFuture.cause() != null) {
             if (channel.isRegistered()) {

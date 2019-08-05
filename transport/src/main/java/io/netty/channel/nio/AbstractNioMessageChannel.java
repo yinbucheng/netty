@@ -59,6 +59,9 @@ public abstract class AbstractNioMessageChannel extends AbstractNioChannel {
 
         private final List<Object> readBuf = new ArrayList<Object>();
 
+        //最核心方法之一，主要作用是用户服务端获取远程客户端的连接。封装好事件传递下去
+        //让内置处理器捕获到当前事件，并将当前事件封装为一个客户端请求处理管道
+        @SuppressWarnings("all")
         @Override
         public void read() {
             assert eventLoop().inEventLoop();
@@ -72,6 +75,7 @@ public abstract class AbstractNioMessageChannel extends AbstractNioChannel {
             try {
                 try {
                     do {
+                        //获取远程连接并封装其为NioSocketChannel对象
                         int localRead = doReadMessages(readBuf);
                         if (localRead == 0) {
                             break;
@@ -90,6 +94,7 @@ public abstract class AbstractNioMessageChannel extends AbstractNioChannel {
                 int size = readBuf.size();
                 for (int i = 0; i < size; i ++) {
                     readPending = false;
+                    //将获取到的连接循环的转变为channelRead事件传播下去
                     pipeline.fireChannelRead(readBuf.get(i));
                 }
                 readBuf.clear();

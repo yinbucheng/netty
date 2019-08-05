@@ -57,6 +57,7 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(NioSocketChannel.class);
     private static final SelectorProvider DEFAULT_SELECTOR_PROVIDER = SelectorProvider.provider();
 
+    //创建jdk底层的连接通道
     private static SocketChannel newSocket(SelectorProvider provider) {
         try {
             /**
@@ -71,6 +72,7 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
         }
     }
 
+    //连接用的基本配置信息
     private final SocketChannelConfig config;
 
     /**
@@ -84,6 +86,7 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
      * Create a new instance using the given {@link SelectorProvider}.
      */
     public NioSocketChannel(SelectorProvider provider) {
+        //创建jdk底层的nio通信通道
         this(newSocket(provider));
     }
 
@@ -342,8 +345,10 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
 
     @Override
     protected int doReadBytes(ByteBuf byteBuf) throws Exception {
+        //获取内存资源分配器
         final RecvByteBufAllocator.Handle allocHandle = unsafe().recvBufAllocHandle();
         allocHandle.attemptedBytesRead(byteBuf.writableBytes());
+        //调用底层jdk的nio的通道将远程数据保存到byteBuf上面
         return byteBuf.writeBytes(javaChannel(), allocHandle.attemptedBytesRead());
     }
 

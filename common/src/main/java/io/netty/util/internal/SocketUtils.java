@@ -102,11 +102,13 @@ public final class SocketUtils {
         }
     }
 
+    @SuppressWarnings("all")
     public static SocketChannel accept(final ServerSocketChannel serverSocketChannel) throws IOException {
         try {
             return AccessController.doPrivileged(new PrivilegedExceptionAction<SocketChannel>() {
                 @Override
                 public SocketChannel run() throws IOException {
+                    //这里是调用jdk的nio最底层的accpet方法
                     return serverSocketChannel.accept();
                 }
             });

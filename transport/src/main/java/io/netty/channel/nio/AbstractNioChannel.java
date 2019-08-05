@@ -81,6 +81,7 @@ public abstract class AbstractNioChannel extends AbstractChannel {
      * @param readInterestOp    the ops to set to receive data from the {@link SelectableChannel}
      */
     protected AbstractNioChannel(Channel parent, SelectableChannel ch, int readInterestOp) {
+        //上面入参 ch 为jdk的底层nio通信通道  readIntersetOP对应客户端为 OP_READ事件
         super(parent);
         this.ch = ch;
         this.readInterestOp = readInterestOp;
@@ -114,6 +115,7 @@ public abstract class AbstractNioChannel extends AbstractChannel {
         return ch;
     }
 
+    //获取NioEventLoop对象
     @Override
     public NioEventLoop eventLoop() {
         return (NioEventLoop) super.eventLoop();
@@ -378,11 +380,13 @@ public abstract class AbstractNioChannel extends AbstractChannel {
         return loop instanceof NioEventLoop;
     }
 
+    //进行注册将当前的底层java通道注册到Selector选择器上面并将当前对象作为附件添加上去
     @Override
     protected void doRegister() throws Exception {
         boolean selected = false;
         for (;;) {
             try {
+                //调用java底层上面的通道上面的注册方法将当前对象注册到Selector上面并将当前对象作为附件添加上去
                 selectionKey = javaChannel().register(eventLoop().unwrappedSelector(), 0, this);
                 return;
             } catch (CancelledKeyException e) {

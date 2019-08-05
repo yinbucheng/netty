@@ -1122,9 +1122,11 @@ public abstract class AbstractByteBuf extends ByteBuf {
         return writtenBytes;
     }
 
+    @SuppressWarnings("all")
     @Override
     public int writeBytes(ScatteringByteChannel in, int length) throws IOException {
         ensureWritable(length);
+        //从jdk的nio通道中获取数据并设置上去
         int writtenBytes = setBytes(writerIndex, in, length);
         if (writtenBytes > 0) {
             writerIndex += writtenBytes;

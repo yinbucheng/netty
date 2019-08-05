@@ -63,6 +63,7 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
      * @param ch                the underlying {@link SelectableChannel} on which it operates
      */
     protected AbstractNioByteChannel(Channel parent, SelectableChannel ch) {
+        //这里入参 parent 为null ，ch 为jdk通信nio底层的通道 ，传递一个OP_READ事件
         super(parent, ch, SelectionKey.OP_READ);
     }
 
@@ -128,6 +129,8 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
             }
         }
 
+        //最为核心方法，其用来处理远程连接传输过来的数据
+        @SuppressWarnings("all")
         @Override
         public final void read() {
             final ChannelConfig config = config();
@@ -135,6 +138,7 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
                 clearReadPending();
                 return;
             }
+            //获取当前处理器管道
             final ChannelPipeline pipeline = pipeline();
             final ByteBufAllocator allocator = config.getAllocator();
             final RecvByteBufAllocator.Handle allocHandle = recvBufAllocHandle();
@@ -145,6 +149,7 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
             try {
                 do {
                     byteBuf = allocHandle.allocate(allocator);
+                    //接收远程数据并保存下来
                     allocHandle.lastBytesRead(doReadBytes(byteBuf));
                     if (allocHandle.lastBytesRead() <= 0) {
                         // nothing was read. release the buffer.
@@ -160,11 +165,13 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
 
                     allocHandle.incMessagesRead(1);
                     readPending = false;
+                    //将远程获取到的数据封装为ChannelRead事件传播到处理器管道上面
                     pipeline.fireChannelRead(byteBuf);
                     byteBuf = null;
                 } while (allocHandle.continueReading());
 
                 allocHandle.readComplete();
+                //将读取完成事件在处理器管道上面传播
                 pipeline.fireChannelReadComplete();
 
                 if (close) {

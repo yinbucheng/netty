@@ -81,7 +81,11 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
     protected AbstractChannel(Channel parent) {
         this.parent = parent;
         id = newId();
+        //创建核心处理对象
+        //服务端返回对象为NioMessageUnsafe
+        //客户端返回对象为NioByteUnsafe
         unsafe = newUnsafe();
+        //创建事件流动的管道
         pipeline = newChannelPipeline();
     }
 
@@ -471,11 +475,12 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
             }
 
             AbstractChannel.this.eventLoop = eventLoop;
-
+            //如果是在NioEventLoop中进行处理则直接调用register0方法
             if (eventLoop.inEventLoop()) {
                 register0(promise);
             } else {
                 try {
+                    //这里表示不在NioEventLoop中处理会将这个方法调用放入到NioEventLoop中进行处理
                     eventLoop.execute(new Runnable() {
                         @Override
                         public void run() {
@@ -493,6 +498,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
             }
         }
 
+        //核心方法进行注册
         private void register0(ChannelPromise promise) {
             try {
                 // check if the channel is still open as it could be closed in the mean time when the register
@@ -501,26 +507,31 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
                     return;
                 }
                 boolean firstRegistration = neverRegistered;
+                //进行注册将当前底层通道注册到Selector选择器上面并将当前对象作为附件保存上去
                 doRegister();
                 neverRegistered = false;
                 registered = true;
 
                 // Ensure we call handlerAdded(...) before we actually notify the promise. This is needed as the
                 // user may already fire events through the pipeline in the ChannelFutureListener.
+                //将HandlerAdd事件在管道上面进行传播
                 pipeline.invokeHandlerAddedIfNeeded();
 
                 safeSetSuccess(promise);
+                //将ChannelRegistered事件在管道上面进行传播
                 pipeline.fireChannelRegistered();
                 // Only fire a channelActive if the channel has never been registered. This prevents firing
                 // multiple channel actives if the channel is deregistered and re-registered.
                 if (isActive()) {
                     if (firstRegistration) {
+                        //如果当前通道是活跃的并且是第一次注册则将ChannelActive事件在管道上面进行传播
                         pipeline.fireChannelActive();
                     } else if (config().isAutoRead()) {
                         // This channel was registered before and autoRead() is set. This means we need to begin read
                         // again so that we process inbound data.
                         //
                         // See https://github.com/netty/netty/issues/4805
+                        //进行读取数据，接收远程服务传输过来的数据
                         beginRead();
                     }
                 }
@@ -844,6 +855,8 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
             }
 
             try {
+                //准备开始读取数据。这里主要是向Selector选择器上面添加感兴趣的事件
+                //如果是服务端会添加ACCEPT  客户端为 READ
                 doBeginRead();
             } catch (final Exception e) {
                 invokeLater(new Runnable() {

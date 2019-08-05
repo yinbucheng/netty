@@ -1355,6 +1355,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         public void bind(
                 ChannelHandlerContext ctx, SocketAddress localAddress, ChannelPromise promise)
                 throws Exception {
+            //这里最终会调用jdk的nio里面通道进行连接
             unsafe.bind(localAddress, promise);
         }
 
@@ -1363,6 +1364,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
                 ChannelHandlerContext ctx,
                 SocketAddress remoteAddress, SocketAddress localAddress,
                 ChannelPromise promise) throws Exception {
+            //这里最终调用底层的jdk的nio里面通道进行连接
             unsafe.connect(remoteAddress, localAddress, promise);
         }
 
