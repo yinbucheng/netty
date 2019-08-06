@@ -1383,6 +1383,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
             unsafe.deregister(promise);
         }
 
+        //这里才真正将Channel和Selector上面的事件注册上去比如ACCPT,READ
         @Override
         public void read(ChannelHandlerContext ctx) {
             unsafe.beginRead();
@@ -1403,6 +1404,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
             ctx.fireExceptionCaught(cause);
         }
 
+        //这里是通道处理器注册事件会进入
         @Override
         public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
             invokeHandlerAddedIfNeeded();

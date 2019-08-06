@@ -476,6 +476,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 
             AbstractChannel.this.eventLoop = eventLoop;
             //如果是在NioEventLoop中进行处理则直接调用register0方法
+            //注意这里没有将通道上面关心的事件注册上去，只是设置一个0
             if (eventLoop.inEventLoop()) {
                 register0(promise);
             } else {
@@ -573,6 +574,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
                 return;
             }
 
+            //这里会把事件或通道进行注册绑定
             if (!wasActive && isActive()) {
                 invokeLater(new Runnable() {
                     @Override

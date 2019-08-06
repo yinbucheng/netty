@@ -780,6 +780,7 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
         boolean inEventLoop = inEventLoop();
         addTask(task);
         if (!inEventLoop) {
+            //如果不是在新的线程中运行则开启新的线程运行
             startThread();
             if (isShutdown() && removeTask(task)) {
                 reject();

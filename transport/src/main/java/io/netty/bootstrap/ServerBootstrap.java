@@ -209,6 +209,8 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
         return new Map.Entry[size];
     }
 
+    //服务端最为核心的处理器，其作用将获取的的新连接处理注册到workGroup里面的NioEventLoop中
+    //这是服务端启动会自动添加的处理器
     private static class ServerBootstrapAcceptor extends ChannelInboundHandlerAdapter {
 
         private final EventLoopGroup childGroup;
@@ -241,10 +243,11 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
         @Override
         @SuppressWarnings("unchecked")
         public void channelRead(ChannelHandlerContext ctx, Object msg) {
+            //这里的child就是NioSocketChannel对象
             final Channel child = (Channel) msg;
-
+            //向新获取到的NioSocketChannel中添加ChildHandler
             child.pipeline().addLast(childHandler);
-
+           //设置属性到之处理器上面
             setChannelOptions(child, childOptions, logger);
 
             for (Entry<AttributeKey<?>, Object> e: childAttrs) {
@@ -252,6 +255,7 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
             }
 
             try {
+                //将NioSocketChannel注册到NioEventLoop上面
                 childGroup.register(child).addListener(new ChannelFutureListener() {
                     @Override
                     public void operationComplete(ChannelFuture future) throws Exception {

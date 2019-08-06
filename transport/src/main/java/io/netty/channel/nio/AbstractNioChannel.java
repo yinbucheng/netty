@@ -387,6 +387,8 @@ public abstract class AbstractNioChannel extends AbstractChannel {
         for (;;) {
             try {
                 //调用java底层上面的通道上面的注册方法将当前对象注册到Selector上面并将当前对象作为附件添加上去
+                //注意这里的0表示不关心任何事件，只是简单的将连接通道注册到Selector选择器上面
+                //这里主要是获取selectionKey对象
                 selectionKey = javaChannel().register(eventLoop().unwrappedSelector(), 0, this);
                 return;
             } catch (CancelledKeyException e) {
